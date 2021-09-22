@@ -1,0 +1,3 @@
+autoload:
+  request:
+    class: 'http\Env\Request'
