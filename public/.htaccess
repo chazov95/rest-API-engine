@@ -1,4 +1,0 @@
-RewriteCond ${REQUEST_FILENAmE} !-f
-RewriteCond ${REQUEST_FILENAmE} !-d
-
-RewriteRule (.*) index.php$1 [L,QSA]

@@ -3,22 +3,31 @@
 namespace App\Core;
 
 use App\Core\Container\Container;
+use App\Core\Container\ContainerBuilder;
 use App\Core\Data\ConfigData;
-use http\Env\Request;
+use App\Core\Route\ExecutableRoute;
+use App\Core\Route\Route;
+use App\Core\Route\RouteBuilder;
 
 class CoreLoader
 {
-    public function load()
+    public function load(): void
     {
         ConfigData::loadParameters();
-        ContainerBuilder::build(ConfigData::loadServicesConfigs());
 
-        $route = RouteFactory::create(ConfigData::loadRoutes());
-        $executableRoute = $this->autowireRoute($route);
-        $this->executeRoute($executableRoute);
-    }
+        /** @var Container $container */
+        $container = ContainerBuilder::get()
+            ->setServiceConfig(ConfigData::loadServicesConfigs())
+            ->build()
+            ->getResult();
 
-    private function autowireRoute($route)
-    {
+        /** @var Route $route */
+        $route = RouteBuilder::get()
+            ->setRouteConfig(ConfigData::loadRoutes())
+            ->setContainer($container)
+            ->build()
+            ->getResult();
+
+        echo $route->execute();
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Core\Data;
 
+use function yaml_parse_file;
+
 class ConfigData
 {
     public static $parameters;
-    public static $services;
 
     public static function loadParameters(): void
     {

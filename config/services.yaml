@@ -1,3 +1,12 @@
-autoload:
-  request:
-    class: 'http\Env\Request'
+# config/services.yaml
+interfaces:
+  App\Component\Logger\LoggerInterface:
+    class: App\Component\Logger\DefaultLogger
+    name: default_logger
+
+classes:
+  default_logger:
+    namespace: App\Component\Logger\DefaultLogger
+    resource: '../src/Component/Logger/DefaultLogger'
+    
+

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Component\Logger;
+
 use App\Component\Logger\LoggerInterface;
 use App\ConfigProvider;
 

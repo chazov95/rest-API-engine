@@ -1,0 +1,22 @@
+  version: '3'
+  services:
+    db:
+      image: "postgres:12.4"
+      ports:
+        - ${POSTGRES_ADDRESS:-127.0.0.1:5434}:5434
+      environment:
+        - PGPORT=5434
+        - POSTGRES_PASSWORD=automate
+        - POSTGRES_USER=automate
+        - POSTGRES_DB=automate
+    php-fpm:
+      build:
+        context: ./.docker/php
+        dockerfile: ./Dockerfile
+      hostname: php-fpm
+      volumes:
+        - "./:/var/www/html"
+        - './.docker/php/000-default.conf:/etc/apache2/sites-available/000-default.conf'
+      working_dir: "/var/www/html"
+      ports:
+        - '8080:80'

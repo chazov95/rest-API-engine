@@ -6,7 +6,7 @@
  * @package  Intaro\Component\Builder
  */
 
-namespace Intaro\Component\Builder;
+namespace Component\Builder;
 
 /**
  * Interface BuilderInterface
@@ -18,15 +18,15 @@ interface BuilderInterface
     /**
      * Builds result
      *
-     * @return \Intaro\Component\Builder\BuilderInterface
-     * @throws \Intaro\Component\Builder\Exception\BuilderException
+     * @return \Component\Builder\BuilderInterface
+     * @throws \Component\Builder\Exception\BuilderException
      */
     public function build(): BuilderInterface;
 
     /**
      * Resets builder
      *
-     * @return \Intaro\Component\Builder\BuilderInterface
+     * @return \Component\Builder\BuilderInterface
      */
     public function reset(): BuilderInterface;
 

@@ -1,0 +1,3 @@
+autowiring:
+  App\:
+    resource: '../src/'
