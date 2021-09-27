@@ -4,12 +4,31 @@ namespace App\Component\Logger;
 
 use App\Component\Logger\LoggerInterface;
 use App\ConfigProvider;
+use DateTime;
 
 /**
  * Формат логов: [YYYY-MM-DD H:m:i] LEVEL: MESSAGE [CLASS::METHOD]
  */
 class DefaultLogger implements LoggerInterface
 {
+    public const DEFAULT_PATH = 'main';
+    private string $path;
+
+    private function __construct(string $path)
+    {
+        $this->setPath($path);
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return \App\Component\Logger\DefaultLogger
+     */
+    public static function get(string $string): DefaultLogger
+    {
+        return new self($string);
+    }
+
     /**
      * @param string $message
      * @param array  $context
@@ -86,14 +105,28 @@ class DefaultLogger implements LoggerInterface
     public function log($level, $message, array $context = []): void
     {
         $logString = sprintf(
-            '[%s] %s: %s [%s::%s]',
-            (new DateTime())->format('YYYY-MM-DD H:m:i'),
+            "[%s] %s: %s [%s on line %s] \n",
+            (new DateTime())->format('Y-m-d H:i:s'),
             $level,
             $message,
-            $context['class'],
-            $context['method']
+            $context['file'],
+            $context['line'],
         );
 
-        file_put_contents(ConfigProvider::getDefaultFilePath(), $logString, FILE_APPEND);
+        file_put_contents(
+            $this->path,
+            $logString,
+            FILE_APPEND
+        );
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return void
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = ConfigProvider::getDefaultFilePath() . ($path ?? self::DEFAULT_PATH) . '.log';
     }
 }

@@ -1,32 +1,31 @@
 <?php
 /**
- * PHP version 7.1
+ * PHP version 8.0
  *
- * @category Integration
- * @package  Intaro\Component\Builder
+ * @package  App\Core\Interfaces
  */
 
-namespace Component\Builder;
+namespace App\Core\Interfaces;
 
 /**
  * Interface BuilderInterface
  *
- * @package Intaro\Component\Builder
+ * @package App\Core\Interfaces
  */
 interface BuilderInterface
 {
     /**
      * Builds result
      *
-     * @return \Component\Builder\BuilderInterface
-     * @throws \Component\Builder\Exception\BuilderException
+     * @return \App\Core\Interfaces\BuilderInterface
+     * @throws \App\Core\Interfaces\Exception\BuilderException
      */
     public function build(): BuilderInterface;
 
     /**
      * Resets builder
      *
-     * @return \Component\Builder\BuilderInterface
+     * @return \App\Core\Interfaces\BuilderInterface
      */
     public function reset(): BuilderInterface;
 
@@ -35,5 +34,5 @@ interface BuilderInterface
      *
      * @return mixed
      */
-    public function getResult();
+    public function getResult(): mixed;
 }

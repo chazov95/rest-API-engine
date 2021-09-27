@@ -9,6 +9,6 @@ class ConfigProvider
      */
     public static function getDefaultFilePath(): string
     {
-        return __DIR__ . '/logs';
+        return __DIR__ . '/../logs/';
     }
 }

@@ -3,19 +3,20 @@
 namespace App\Core\Container;
 
 
-use Component\Builder\BuilderInterface;
+use App\Core\Interfaces\BuilderInterface;
 
 class ContainerBuilder implements BuilderInterface
 {
-    /**
-     * @var BuilderInterface
-     */
-    private static BuilderInterface $builder;
+    /** @var \App\Core\Interfaces\BuilderInterface|null */
+    private static ?BuilderInterface $builder = null;
 
     /**
      * @var array
      */
     private array $serviceConfig;
+
+    /** @var \App\Core\Container\Container|null */
+    private ?Container $container;
 
     private function __construct()
     {
@@ -27,7 +28,7 @@ class ContainerBuilder implements BuilderInterface
     public static function get(): ContainerBuilder
     {
         if (self::$builder === null) {
-            self::$builder = new self();
+            self::$builder =  new self();
         }
 
         return self::$builder;
@@ -47,17 +48,30 @@ class ContainerBuilder implements BuilderInterface
 
     public function build(): BuilderInterface
     {
-        // TODO: Implement build() method.
+        $container = new Container();
+//TODO
+        /*foreach ($this->serviceConfig['classes'] as $key => $class) {
+            $container->add()
+        }
+
+        echo '<pre>';
+        print_r($this->serviceConfig);
+        echo '</pre>';*/
+        return $this;
     }
 
     public function reset(): BuilderInterface
     {
-        // TODO: Implement reset() method.
+        $this->serviceConfig = [];
+        $this->container = null;
+
+        return $this;
     }
 
-    public function getResult()
+    public function getResult(): Container
     {
         $this->reset();
-        // TODO: Implement getResult() method.
+
+        return $this->container;
     }
 }

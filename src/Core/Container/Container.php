@@ -4,9 +4,9 @@ namespace App\Core\Container;
 
 class Container implements ContainerInterface
 {
-    private $container;
+    private static $container;
 
-    private function __construct()
+    public function __construct()
     {
     }
 

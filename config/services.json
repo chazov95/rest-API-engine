@@ -6,13 +6,12 @@
       "tag": "default_logger"
     }
   ],
-  "classes": [
-    {
-      "tag": "default_logger",
+  "classes": {
+    "default_logger": {
       "class": "App\\Component\\Logger\\DefaultLogger",
       "resource": "../src/Component/Logger/DefaultLogger"
     }
-  ]
+  }
 }
 
 

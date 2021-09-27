@@ -36,6 +36,13 @@ class Route
      */
     public array $methodArgumentsValues;
 
+    /**
+     * Тип роута: api или html
+     *
+     * @var string
+     */
+    public string $type;
+
     public function execute(): void
     {
 
