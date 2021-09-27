@@ -5,12 +5,14 @@ namespace App\Core;
 use App\Core\Container\Container;
 use App\Core\Container\ContainerBuilder;
 use App\Core\Data\ConfigData;
-use App\Core\Route\ExecutableRoute;
 use App\Core\Route\Route;
 use App\Core\Route\RouteBuilder;
 
 class CoreLoader
 {
+    /**
+     * @throws \App\Core\Data\ConfigDataException
+     */
     public function load(): void
     {
         ConfigData::loadParameters();
@@ -28,6 +30,6 @@ class CoreLoader
             ->build()
             ->getResult();
 
-        echo $route->execute();
+        $route->execute();
     }
 }

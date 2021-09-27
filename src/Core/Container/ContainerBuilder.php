@@ -57,6 +57,7 @@ class ContainerBuilder implements BuilderInterface
 
     public function getResult()
     {
+        $this->reset();
         // TODO: Implement getResult() method.
     }
 }

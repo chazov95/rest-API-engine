@@ -1,5 +1,0 @@
-html:
-  test:
-    path: /test
-    controller: App\Controller\TestController::salute
-    metods: GET

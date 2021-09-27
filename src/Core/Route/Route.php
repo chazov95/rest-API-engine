@@ -36,7 +36,7 @@ class Route
      */
     public array $methodArgumentsValues;
 
-    public function execute(): string
+    public function execute(): void
     {
 
     }

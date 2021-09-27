@@ -55,7 +55,7 @@ class RouteBuilder implements BuilderInterface
 
     public function build(): BuilderInterface
     {
-        // TODO: Implement build() method.
+
     }
 
     public function reset(): BuilderInterface
@@ -65,6 +65,7 @@ class RouteBuilder implements BuilderInterface
 
     public function getResult()
     {
+        $this->reset();
         // TODO: Implement getResult() method.
     }
 }
