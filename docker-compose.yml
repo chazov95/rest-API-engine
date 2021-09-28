@@ -1,14 +1,14 @@
   version: '3'
   services:
     db:
-      image: "postgres:12.4"
+      image: postgres:13-alpine
       ports:
-        - ${POSTGRES_ADDRESS:-127.0.0.1:5434}:5434
+        - ${POSTGRES_ADDRESS:-127.0.0.1:5432}:5432
       environment:
-        - PGPORT=5434
-        - POSTGRES_PASSWORD=automate
-        - POSTGRES_USER=automate
-        - POSTGRES_DB=automate
+        - PGPORT=5432
+        - POSTGRES_PASSWORD=engine
+        - POSTGRES_USER=engine
+        - POSTGRES_DB=engine
     php-fpm:
       build:
         context: ./.docker/php

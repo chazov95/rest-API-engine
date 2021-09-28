@@ -22,13 +22,13 @@ class CoreLoader
 
         try {
             /** @var Container $container */
-            $container = ContainerBuilder::get()
+            $container = ContainerBuilder::getInstance()
                 ->setServiceConfig(ConfigData::loadServicesConfigs())
                 ->build()
                 ->getResult();
 
             /** @var Route $route */
-            $route = RouteBuilder::get()
+            $route = RouteBuilder::getInstance()
                 ->setRouteConfig(ConfigData::loadRoutes())
                 ->setContainer($container)
                 ->build()
@@ -36,15 +36,14 @@ class CoreLoader
 
             $route->execute();
         } catch (Throwable $exception) {
-            $logger = DefaultLogger::get('core');
-
-            $logger->log(
+            DefaultLogger::getInstance()->log(
                     LogLevels::CRITICAL,
                     $exception->getMessage(),
                     [
                         'file' => $exception->getFile(),
                         'line' => $exception->getLine()
-                    ]
+                    ],
+                'core'
                 );
 
             /*ErrorResponseFactory::create($exception, $route->type)->send();*/ //TODO реализовать

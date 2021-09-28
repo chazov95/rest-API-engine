@@ -18,7 +18,7 @@ interface BuilderInterface
      * Builds result
      *
      * @return \App\Core\Interfaces\BuilderInterface
-     * @throws \App\Core\Interfaces\Exception\BuilderException
+     * @throws \App\Core\Exception\BuilderException
      */
     public function build(): BuilderInterface;
 

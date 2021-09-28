@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Core\Container;
+namespace App\Core\Interfaces\Psr;
+
 
 /**
  * Describes the interface of a container that exposes methods to read its entries.

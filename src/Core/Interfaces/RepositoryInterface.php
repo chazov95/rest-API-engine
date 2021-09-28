@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Core\Interfaces;
+
 interface RepositoryInterface
 {
     public function create(ModelInterface $model): ModelInterface;

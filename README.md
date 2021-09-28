@@ -1,15 +1,12 @@
 # Движок для REST-API проектов
 
-##Поддерживаемые стандарты
+##Standarts
 ###PSR
 - Logger: PSR-3 https://www.php-fig.org/psr/psr-3
 - Autoload: PSR-4 https://www.php-fig.org/psr/psr-4
 - Container Interface: PSR-11 https://www.php-fig.org/psr/psr-11
 
-###YAML
-- 1.2.1 https://yaml.org/spec/1.2.1/
-
-## Требования
+## Requirements
 
 - ^PHP 8.0
 
@@ -17,8 +14,8 @@
 - MySQLi https://www.php.net/manual/ru/book.mysqli.php
 - Yaml https://www.php.net/manual/ru/book.yaml.php
 
-##Формат описания роута:
-json:                                                 - тип (html/json)
+##Routs format:
+'json:                                                 - тип (html/json)
   blog_list:                                          - название маршрута
     path:       /blog/{page}                          - путь
     controller: App\Controller\BlogController::list   - используемый контроллер и метод в нем
@@ -28,4 +25,13 @@ json:                                                 - тип (html/json)
     requirements:                                     - валидация
       page: '\d+'                                     - параметр {page} должен соответствовать регулярному выражению '\d+'
 
-#test
+### Структура контейнера
+
+Сервисы в контейнере лежат в массиве с двумя главными ключами
+[
+tag_object => [], В этом массиве ключом является тэг. Он нужен, чтобы хранить неограниченное кол-во экземпляров одного сервиса
+fqn_object => [], В этом массиве ключом является FQN. В нем может находиться только один экземпляр одного сервиса
+]
+
+Метод has контейнера проверят наличие сервиса в fqn_object
+Метод hasByTag контейнера проверят наличие сервиса в tag_object

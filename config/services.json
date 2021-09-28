@@ -1,15 +1,18 @@
 {
-  "interfaces": [
-    {
-      "interface": "App\\Component\\Logger\\LoggerInterface",
-      "class": "App\\Component\\Logger\\DefaultLogger",
+  "interfaces": {
+    "logger_interface": {
+      "interface": "App\\Core\\Interfaces\\Psr\\LoggerInterface",
       "tag": "default_logger"
     }
-  ],
+  },
   "classes": {
     "default_logger": {
       "class": "App\\Component\\Logger\\DefaultLogger",
-      "resource": "../src/Component/Logger/DefaultLogger"
+      "dependencies": []
+    },
+    "repository_manager": {
+      "class": "App\\Core\\Orm\\RepositoryManager",
+      "dependencies": []
     }
   }
 }

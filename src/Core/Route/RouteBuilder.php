@@ -2,7 +2,6 @@
 
 namespace App\Core\Route;
 
-use App\Component\Factory\FactoryInterface;
 use App\Core\Container\Container;
 use Component\Builder\BuilderInterface;
 
@@ -19,7 +18,7 @@ class RouteBuilder implements BuilderInterface
     /**
      * @return \App\Core\Route\RouteBuilder
      */
-    public static function get(): RouteBuilder
+    public static function getInstance(): RouteBuilder
     {
         if (self::$builder === null) {
             self::$builder = new self();

@@ -2,9 +2,14 @@
 
 namespace App\Core\Container;
 
+use App\Core\Interfaces\Psr\ContainerInterface;
+
 class Container implements ContainerInterface
 {
-    private static $container;
+    /**
+     * @var object[]
+     */
+    private static array $container;
 
     public function __construct()
     {
@@ -20,13 +25,12 @@ class Container implements ContainerInterface
         // TODO: Implement has() method.
     }
 
-    public function add($className)
+    /**
+     * @param string $className
+     * @param object $instance
+     */
+    public function add(string $className, object $instance): void
     {
-        // TODO: Implement has() method.
-    }
-
-    public function build($className)
-    {
-        // TODO: Implement has() method.
+        self::$container[$className] = $instance;
     }
 }

@@ -3,7 +3,10 @@
 namespace App\Core\Container;
 
 
+use App\Core\Exception\ContainerBuilderException;
 use App\Core\Interfaces\BuilderInterface;
+use ReflectionClass;
+
 
 class ContainerBuilder implements BuilderInterface
 {
@@ -25,7 +28,7 @@ class ContainerBuilder implements BuilderInterface
     /**
      * @return \App\Core\Container\ContainerBuilder
      */
-    public static function get(): ContainerBuilder
+    public static function getInstance(): ContainerBuilder
     {
         if (self::$builder === null) {
             self::$builder =  new self();
@@ -49,14 +52,11 @@ class ContainerBuilder implements BuilderInterface
     public function build(): BuilderInterface
     {
         $container = new Container();
-//TODO
-        /*foreach ($this->serviceConfig['classes'] as $key => $class) {
-            $container->add()
+
+        foreach ($this->serviceConfig['classes'] as $key => $class) {
+            $this->createService((string) $key, $class, $container);
         }
 
-        echo '<pre>';
-        print_r($this->serviceConfig);
-        echo '</pre>';*/
         return $this;
     }
 
@@ -73,5 +73,36 @@ class ContainerBuilder implements BuilderInterface
         $this->reset();
 
         return $this->container;
+    }
+
+    /**
+     * @param string                        $key
+     * @param mixed                         $class
+     * @param \App\Core\Container\Container $container
+     *
+     * @return void
+     * @throws \ReflectionException
+     */
+    private function createService(string $key, mixed $class, Container $container): void
+    {
+        if ($container->has($key)) {
+           return;
+        }
+
+        $reflection = new ReflectionClass($class['class']);
+
+        $atributes = [];
+
+        if (isset($class['attributes']) && is_array($class['attributes'])) {
+            foreach ($class['attributes'] as $tag) {
+                $atributes[] = $this->createServicesByTag($tag);
+            }
+        } elseif (count($reflection->getAttributes()) > 0) {
+            foreach ($reflection->getAttributes() as $attribute) {
+                $atributes[] =
+            }
+        }
+
+        $container->add($key, $object);
     }
 }

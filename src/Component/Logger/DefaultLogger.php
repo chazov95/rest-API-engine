@@ -2,9 +2,10 @@
 
 namespace App\Component\Logger;
 
-use App\Component\Logger\LoggerInterface;
+use App\Core\Interfaces\Psr\LoggerInterface;
 use App\ConfigProvider;
 use DateTime;
+use JetBrains\PhpStorm\Pure;
 
 /**
  * Формат логов: [YYYY-MM-DD H:m:i] LEVEL: MESSAGE [CLASS::METHOD]
@@ -12,21 +13,26 @@ use DateTime;
 class DefaultLogger implements LoggerInterface
 {
     public const DEFAULT_PATH = 'main';
-    private string $path;
 
-    private function __construct(string $path)
+    /**
+     * @var \App\Component\Logger\DefaultLogger|null
+     */
+    private static ?DefaultLogger $logger = null;
+
+    private function __construct()
     {
-        $this->setPath($path);
     }
 
     /**
-     * @param string $string
-     *
      * @return \App\Component\Logger\DefaultLogger
      */
-    public static function get(string $string): DefaultLogger
+    public static function getInstance(): DefaultLogger
     {
-        return new self($string);
+        if (self::$logger === null) {
+            self::$logger = new self();
+        }
+
+        return self::$logger;
     }
 
     /**
@@ -101,8 +107,9 @@ class DefaultLogger implements LoggerInterface
      * @param mixed  $level
      * @param string $message
      * @param array  $context
+     * @param string $channel
      */
-    public function log($level, $message, array $context = []): void
+    public function log($level, $message, array $context = [], string $channel = 'main'): void
     {
         $logString = sprintf(
             "[%s] %s: %s [%s on line %s] \n",
@@ -114,19 +121,19 @@ class DefaultLogger implements LoggerInterface
         );
 
         file_put_contents(
-            $this->path,
+            $this->getPath($channel),
             $logString,
             FILE_APPEND
         );
     }
 
     /**
-     * @param string $path
+     * @param string $channel
      *
-     * @return void
+     * @return string
      */
-    public function setPath(string $path): void
+    #[Pure] private function getPath(string $channel): string
     {
-        $this->path = ConfigProvider::getDefaultFilePath() . ($path ?? self::DEFAULT_PATH) . '.log';
+        return ConfigProvider::getDefaultFilePath() . ($channel ?? self::DEFAULT_PATH) . '.log';
     }
 }

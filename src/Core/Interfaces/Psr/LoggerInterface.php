@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Component\Logger;
+namespace App\Core\Interfaces\Psr;
 
 /**
  * Describes a logger instance.

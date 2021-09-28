@@ -1,5 +1,6 @@
 <?php
-namespace App\Core\Container;
+
+namespace App\Core\Interfaces\Psr;
 
 /**
  * No entry was found in the container.

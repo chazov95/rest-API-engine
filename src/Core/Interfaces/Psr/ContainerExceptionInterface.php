@@ -1,5 +1,7 @@
 <?php
-namespace App\Core\Container;
+
+namespace App\Core\Interfaces\Psr;
+
 
 /**
  * Base interface representing a generic exception in a container.
