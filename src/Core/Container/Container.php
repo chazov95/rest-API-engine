@@ -9,7 +9,8 @@ class Container implements ContainerInterface
     /**
      * @var object[]
      */
-    private static array $container;
+    private static array $simpleContainer;
+    private static array $customContainer;
 
     public function __construct()
     {
@@ -29,8 +30,17 @@ class Container implements ContainerInterface
      * @param string $className
      * @param object $instance
      */
-    public function add(string $className, object $instance): void
+    public function addSimpleService(string $className, object $instance): void
     {
-        self::$container[$className] = $instance;
+        self::$simpleContainer[$className] = $instance;
+    }
+
+    /**
+     * @param string $tag
+     * @param object $instance
+     */
+    public function addCustomService(string $tag, object $instance): void
+    {
+        self::$customContainer[$tag] = $instance;
     }
 }

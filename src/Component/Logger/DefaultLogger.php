@@ -19,7 +19,7 @@ class DefaultLogger implements LoggerInterface
      */
     private static ?DefaultLogger $logger = null;
 
-    private function __construct()
+    private function __construct(string $x, LogLevels $levels)
     {
     }
 

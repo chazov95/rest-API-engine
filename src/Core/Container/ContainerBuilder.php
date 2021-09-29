@@ -6,10 +6,13 @@ namespace App\Core\Container;
 use App\Core\Exception\ContainerBuilderException;
 use App\Core\Interfaces\BuilderInterface;
 use ReflectionClass;
+use ReflectionParameter;
 
 
 class ContainerBuilder implements BuilderInterface
 {
+    public const TAG = "tag";
+
     /** @var \App\Core\Interfaces\BuilderInterface|null */
     private static ?BuilderInterface $builder = null;
 
@@ -31,7 +34,7 @@ class ContainerBuilder implements BuilderInterface
     public static function getInstance(): ContainerBuilder
     {
         if (self::$builder === null) {
-            self::$builder =  new self();
+            self::$builder = new self();
         }
 
         return self::$builder;
@@ -49,12 +52,15 @@ class ContainerBuilder implements BuilderInterface
         return $this;
     }
 
+    /**
+     * @throws \ReflectionException|\App\Core\Exception\ContainerBuilderException
+     */
     public function build(): BuilderInterface
     {
-        $container = new Container();
+        $this->container = new Container();
 
-        foreach ($this->serviceConfig['classes'] as $key => $class) {
-            $this->createService((string) $key, $class, $container);
+        foreach ($this->serviceConfig['classes'] as $tag => $class) {
+            $this->container->addCustomService($tag, $this->createCustomService((string) $tag));
         }
 
         return $this;
@@ -76,33 +82,77 @@ class ContainerBuilder implements BuilderInterface
     }
 
     /**
-     * @param string                        $key
-     * @param mixed                         $class
-     * @param \App\Core\Container\Container $container
+     * @param string $tag
      *
      * @return void
+     * @throws \App\Core\Exception\ContainerBuilderException
      * @throws \ReflectionException
      */
-    private function createService(string $key, mixed $class, Container $container): void
+    private function createCustomService(string $tag): mixed
     {
-        if ($container->has($key)) {
-           return;
+        if ($this->container->has($tag)) {
+            return;
         }
 
-        $reflection = new ReflectionClass($class['class']);
+        $className = $this->serviceConfig[$tag]['class'];
 
-        $atributes = [];
+        $reflection = new ReflectionClass($className);
+        $constructor = $reflection->getConstructor();
 
-        if (isset($class['attributes']) && is_array($class['attributes'])) {
-            foreach ($class['attributes'] as $tag) {
-                $atributes[] = $this->createServicesByTag($tag);
-            }
-        } elseif (count($reflection->getAttributes()) > 0) {
-            foreach ($reflection->getAttributes() as $attribute) {
-                $atributes[] =
-            }
+        if ($constructor === null) {
+            throw new ContainerBuilderException(
+                sprintf('constructor for %s dose not accessable', $className)
+            );
         }
 
-        $container->add($key, $object);
+        $parameters = $constructor->getParameters();
+
+        if (count($parameters) === 0) {
+            if (count($this->serviceConfig[$tag]['arguments']) > 0) {
+                throw new ContainerBuilderException(sprintf('config for %s is wrong', $className));
+            }
+
+            return new $this->serviceConfig[$tag]['class']();
+        }
+
+        $constructorArguments = [];
+
+        foreach ($parameters as $key => $parameter) {
+            $type = $parameter->getType();
+
+            if ($this->serviceConfig[$tag]['arguments'][$key]['type'] === 'tag') {
+                $constructorArguments[]
+                    = $this->createCustomService($this->serviceConfig[$tag]['arguments'][$key]['value']);
+
+                continue;
+            }
+
+            if ($this->serviceConfig[$tag]['arguments'][$key]['type'] === 'object') {
+                $constructorArguments[]
+                    = $this->createSimpleService($this->serviceConfig[$tag]['arguments'][$key]['value']);
+
+                continue;
+            }
+
+            $constructorArguments[] = $this->castToSimpleType($this->serviceConfig[$tag]['arguments'][$key]);
+        }
+    }
+
+    /**
+     * @param array $argument
+     *
+     * @return array|float|bool|int|string
+     * @throws \App\Core\Exception\ContainerBuilderException
+     */
+    private function castToSimpleType(array $argument): array|float|bool|int|string
+    {
+        return match ($argument['type']) {
+            'string' => $argument['value'],
+            'bool', 'boolean' => (boolean) $argument['value'],
+            'float' => (float) $argument['value'],
+            'int', 'integer' => (int) $argument['value'],
+            'array' => explode(',', $argument['value']),
+            default => throw new ContainerBuilderException("Can't cast value"),
+        };
     }
 }
