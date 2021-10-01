@@ -3,7 +3,7 @@
 namespace App\Core\Route;
 
 use App\Core\Container\Container;
-use Component\Builder\BuilderInterface;
+use App\Core\Interfaces\BuilderInterface;
 
 class RouteBuilder implements BuilderInterface
 {
@@ -39,19 +39,6 @@ class RouteBuilder implements BuilderInterface
         return $this;
     }
 
-    /**
-     *
-     * @param \App\Core\Container\Container $container
-     *
-     * @return \App\Core\Route\RouteBuilder
-     */
-    public function setContainer(Container $container): RouteBuilder
-    {
-        $this->container = $container;
-
-        return $this;
-    }
-
     public function build(): BuilderInterface
     {
 
@@ -62,7 +49,7 @@ class RouteBuilder implements BuilderInterface
         // TODO: Implement reset() method.
     }
 
-    public function getResult()
+    public function getResult(): mixed
     {
         $this->reset();
         // TODO: Implement getResult() method.

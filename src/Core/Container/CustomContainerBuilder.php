@@ -3,13 +3,14 @@
 namespace App\Core\Container;
 
 
+use App\Core\Core;
 use App\Core\Exception\ContainerBuilderException;
 use App\Core\Interfaces\BuilderInterface;
 use ReflectionClass;
 use ReflectionParameter;
 
 
-class ContainerBuilder implements BuilderInterface
+class CustomContainerBuilder implements BuilderInterface
 {
     public const TAG = "tag";
 
@@ -29,9 +30,9 @@ class ContainerBuilder implements BuilderInterface
     }
 
     /**
-     * @return \App\Core\Container\ContainerBuilder
+     * @return \App\Core\Container\CustomContainerBuilder
      */
-    public static function getInstance(): ContainerBuilder
+    public static function getInstance(): CustomContainerBuilder
     {
         if (self::$builder === null) {
             self::$builder = new self();
@@ -43,9 +44,9 @@ class ContainerBuilder implements BuilderInterface
     /**
      * @param array $serviceConfig
      *
-     * @return \App\Core\Container\ContainerBuilder
+     * @return \App\Core\Container\CustomContainerBuilder
      */
-    public function setServiceConfig(array $serviceConfig): ContainerBuilder
+    public function setServiceConfig(array $serviceConfig): CustomContainerBuilder
     {
         $this->serviceConfig = $serviceConfig;
 
@@ -60,7 +61,7 @@ class ContainerBuilder implements BuilderInterface
         $this->container = new Container();
 
         foreach ($this->serviceConfig['classes'] as $tag => $class) {
-            $this->container->addCustomService($tag, $this->createCustomService((string) $tag));
+            $this->container->add($tag, $this->createServiceByTag((string)$tag));
         }
 
         return $this;
@@ -88,9 +89,9 @@ class ContainerBuilder implements BuilderInterface
      * @throws \App\Core\Exception\ContainerBuilderException
      * @throws \ReflectionException
      */
-    private function createCustomService(string $tag): mixed
+    private function createServiceByTag(string $tag = ''): mixed
     {
-        if ($this->container->has($tag)) {
+        if (!empty($tag) && $this->container->has($tag)) {
             return;
         }
 
@@ -101,7 +102,7 @@ class ContainerBuilder implements BuilderInterface
 
         if ($constructor === null) {
             throw new ContainerBuilderException(
-                sprintf('constructor for %s dose not accessable', $className)
+                sprintf('constructor for %s dose not accessible', $className)
             );
         }
 
@@ -122,14 +123,14 @@ class ContainerBuilder implements BuilderInterface
 
             if ($this->serviceConfig[$tag]['arguments'][$key]['type'] === 'tag') {
                 $constructorArguments[]
-                    = $this->createCustomService($this->serviceConfig[$tag]['arguments'][$key]['value']);
+                    = $this->createServiceByTag($this->serviceConfig[$tag]['arguments'][$key]['value']);
 
                 continue;
             }
 
             if ($this->serviceConfig[$tag]['arguments'][$key]['type'] === 'object') {
                 $constructorArguments[]
-                    = $this->createSimpleService($this->serviceConfig[$tag]['arguments'][$key]['value']);
+                    = $this->createServiceByFqn($this->serviceConfig[$tag]['arguments'][$key]['value']);
 
                 continue;
             }
@@ -148,11 +149,51 @@ class ContainerBuilder implements BuilderInterface
     {
         return match ($argument['type']) {
             'string' => $argument['value'],
-            'bool', 'boolean' => (boolean) $argument['value'],
-            'float' => (float) $argument['value'],
-            'int', 'integer' => (int) $argument['value'],
+            'bool', 'boolean' => (boolean)$argument['value'],
+            'float' => (float)$argument['value'],
+            'int', 'integer' => (int)$argument['value'],
             'array' => explode(',', $argument['value']),
             default => throw new ContainerBuilderException("Can't cast value"),
         };
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerBuilderException
+     */
+    private function createServiceByFqn(string $className)
+    {
+        $simpleContainer = Core::getSimpleContainew();
+
+        if ($simpleContainer->has($className)) {
+            return $simpleContainer->get($className);
+        };
+
+        $reflection = new ReflectionClass($className);
+        $constructor = $reflection->getConstructor();
+
+        if ($constructor === null) {
+            throw new ContainerBuilderException(
+                sprintf('constructor for %s dose not accessible', $className)
+            );
+        }
+
+        $parameters = $constructor->getParameters();
+
+        if (count($parameters) === 0) {
+            $simpleContainer->add($className, new $className());
+
+            return $simpleContainer->get($className);
+        }
+
+        foreach ($parameters as $key => $parameter) {
+            $type = $parameter->getType();
+
+            if ($type->isBuiltin()) {
+                    $constructorArguments[] = $parameter->getDefaultValue();
+            } else {
+                $this->createServiceByFqn($parameter->getType());
+            }
+        }
     }
 }

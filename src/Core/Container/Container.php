@@ -2,45 +2,34 @@
 
 namespace App\Core\Container;
 
+use App\Core\Interfaces\ExtendedContainerInterface;
 use App\Core\Interfaces\Psr\ContainerInterface;
 
-class Container implements ContainerInterface
+class Container extends AbstractContainer implements ExtendedContainerInterface
 {
-    /**
-     * @var object[]
-     */
-    private static array $simpleContainer;
-    private static array $customContainer;
-
-    public function __construct()
-    {
-    }
+    /** @var array */
+    protected array $data = [];
 
     public function get($id)
     {
         // TODO: Implement get() method.
     }
 
-    public function has($id)
+    /**
+     * @param string $key
+     * @param object $object
+     */
+    public function add(string $key, object $object): void
     {
-        // TODO: Implement has() method.
+        $this->data[$key] = $object;
     }
 
     /**
-     * @param string $className
-     * @param object $instance
+     * @param string $key
+     * @param callable $function
      */
-    public function addSimpleService(string $className, object $instance): void
+    public function bind(string $key, callable $function): void
     {
-        self::$simpleContainer[$className] = $instance;
-    }
-
-    /**
-     * @param string $tag
-     * @param object $instance
-     */
-    public function addCustomService(string $tag, object $instance): void
-    {
-        self::$customContainer[$tag] = $instance;
+        $this->data[$key] = $function();
     }
 }

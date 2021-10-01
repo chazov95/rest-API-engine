@@ -11,12 +11,13 @@ class ConfigData
     public static array $parameters;
 
     /**
+     * @return array
      * @throws \App\Core\Data\ConfigDataException
      */
-    public static function loadParameters(): void
+    public static function loadParameters(): array
     {
         try {
-            self::$parameters = json_decode(
+            return json_decode(
                 file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/../config/parameters.json'),
                 true,
                 512,
