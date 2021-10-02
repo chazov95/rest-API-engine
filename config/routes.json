@@ -1,8 +1,12 @@
 {
-  "html": {
-    "test": {
-      "path": "/test",
+  "GET": {
+    "/test": {
       "controller": "App\\Controller\\TestController::salute",
+      "method": "GET"
+    }
+  },
+    "/test/{id}": {
+      "controller": "App\\Controller\\TestController::salute2",
       "method": "GET"
     }
   }

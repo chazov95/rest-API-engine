@@ -2,7 +2,7 @@
 
 namespace App\Core\Exception;
 
-class BuilderException
+class BuilderException extends \Exception
 {
 
 }

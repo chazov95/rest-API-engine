@@ -89,14 +89,13 @@ class CustomContainerBuilder implements BuilderInterface
      * @throws \App\Core\Exception\ContainerBuilderException
      * @throws \ReflectionException
      */
-    private function createServiceByTag(string $tag = ''): mixed
+    private function createServiceByTag(string $tag = ''): object
     {
         if (!empty($tag) && $this->container->has($tag)) {
             return;
         }
 
         $className = $this->serviceConfig[$tag]['class'];
-
         $reflection = new ReflectionClass($className);
         $constructor = $reflection->getConstructor();
 
@@ -137,6 +136,8 @@ class CustomContainerBuilder implements BuilderInterface
 
             $constructorArguments[] = $this->castToSimpleType($this->serviceConfig[$tag]['arguments'][$key]);
         }
+
+        return $reflection->newInstanceArgs($constructorArguments);
     }
 
     /**
@@ -185,15 +186,18 @@ class CustomContainerBuilder implements BuilderInterface
 
             return $simpleContainer->get($className);
         }
+        $constructorArguments = [];
 
         foreach ($parameters as $key => $parameter) {
             $type = $parameter->getType();
 
             if ($type->isBuiltin()) {
-                    $constructorArguments[] = $parameter->getDefaultValue();
+                $constructorArguments[] = $parameter->getDefaultValue();
             } else {
                 $this->createServiceByFqn($parameter->getType());
             }
         }
+
+        return $reflection->newInstanceArgs($constructorArguments);
     }
 }

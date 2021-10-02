@@ -4,16 +4,14 @@ namespace App\Core\Abstractions;
 
 use App\Core\Interfaces\ControllerInterface;
 use App\Core\Interfaces\Psr\LoggerInterface;
+use http\Env\Request;
 
 abstract class AbstractController implements ControllerInterface
 {
-    /**
-     * @var \App\Core\Interfaces\Psr\LoggerInterface
-     */
-    private LoggerInterface $logger;
+    private Request $request;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(Request $request)
     {
-        $this->logger = $logger;
+        $this->request = $request;
     }
 }
