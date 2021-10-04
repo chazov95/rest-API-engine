@@ -6,13 +6,6 @@
     }
   },
   "classes": {
-    "default_logger": {
-      "class": "App\\Component\\Logger\\DefaultLogger",
-      "arguments": [
-        {"type":"string", "value": "test"},
-        {"type":"object", "value": "App\\Component\\Logger\\LoggerLevel"}
-      ]
-    },
     "repository_manager": {
       "class": "App\\Core\\Orm\\RepositoryManager",
       "arguments": []

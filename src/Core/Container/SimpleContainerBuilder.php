@@ -6,7 +6,7 @@ use App\Core\Interfaces\BuilderInterface;
 
 class SimpleContainerBuilder implements BuilderInterface
 {
-    private static SimpleContainerBuilder $builder;
+    private static ?SimpleContainerBuilder $builder = null;
 
     /**
      * @return SimpleContainerBuilder
@@ -22,6 +22,7 @@ class SimpleContainerBuilder implements BuilderInterface
 
     public function build(): BuilderInterface
     {
+        return $this;
         // TODO: Implement build() method.
     }
 
@@ -32,6 +33,7 @@ class SimpleContainerBuilder implements BuilderInterface
 
     public function getResult(): Container
     {
+        return new Container();
         // TODO: Implement getResult() method.
     }
 }

@@ -9,7 +9,7 @@ use http\Env\Request;
 
 class RouteBuilder implements BuilderInterface
 {
-    private static RouteBuilder $builder;
+    private static ?RouteBuilder $builder = null;
     private Container $container;
     private Route $route;
 

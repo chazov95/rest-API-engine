@@ -4,7 +4,8 @@ namespace App\Core\Container;
 
 
 use App\Core\Core;
-use App\Core\Exception\ContainerBuilderException;
+use App\Core\Container\ContainerBuilderException;
+use App\Core\Data\ConfigDataException;
 use App\Core\Interfaces\BuilderInterface;
 use ReflectionClass;
 use ReflectionParameter;
@@ -54,12 +55,13 @@ class CustomContainerBuilder implements BuilderInterface
     }
 
     /**
-     * @throws \ReflectionException|\App\Core\Exception\ContainerBuilderException
+     * @throws \ReflectionException|\App\Core\Container\ContainerBuilderException
+     * @throws ConfigDataException
      */
     public function build(): BuilderInterface
     {
         $this->container = new Container();
-
+        $this->customContainerBind();
         foreach ($this->serviceConfig['classes'] as $tag => $class) {
             $this->container->add($tag, $this->createServiceByTag((string)$tag));
         }
@@ -77,8 +79,6 @@ class CustomContainerBuilder implements BuilderInterface
 
     public function getResult(): Container
     {
-        $this->reset();
-
         return $this->container;
     }
 
@@ -86,16 +86,16 @@ class CustomContainerBuilder implements BuilderInterface
      * @param string $tag
      *
      * @return void
-     * @throws \App\Core\Exception\ContainerBuilderException
+     * @throws \App\Core\Container\ContainerBuilderException
      * @throws \ReflectionException
      */
     private function createServiceByTag(string $tag = ''): object
     {
         if (!empty($tag) && $this->container->has($tag)) {
-            return;
+            return $this->container->get($tag);
         }
 
-        $className = $this->serviceConfig[$tag]['class'];
+        $className = $this->serviceConfig['classes'][$tag]['class'];
         $reflection = new ReflectionClass($className);
         $constructor = $reflection->getConstructor();
 
@@ -108,11 +108,11 @@ class CustomContainerBuilder implements BuilderInterface
         $parameters = $constructor->getParameters();
 
         if (count($parameters) === 0) {
-            if (count($this->serviceConfig[$tag]['arguments']) > 0) {
+            if (count($this->serviceConfig['classes'][$tag]['arguments']) > 0) {
                 throw new ContainerBuilderException(sprintf('config for %s is wrong', $className));
             }
 
-            return new $this->serviceConfig[$tag]['class']();
+            return new $this->serviceConfig['classes'][$tag]['class']();
         }
 
         $constructorArguments = [];
@@ -144,7 +144,7 @@ class CustomContainerBuilder implements BuilderInterface
      * @param array $argument
      *
      * @return array|float|bool|int|string
-     * @throws \App\Core\Exception\ContainerBuilderException
+     * @throws \App\Core\Container\ContainerBuilderException
      */
     private function castToSimpleType(array $argument): array|float|bool|int|string
     {
@@ -199,5 +199,33 @@ class CustomContainerBuilder implements BuilderInterface
         }
 
         return $reflection->newInstanceArgs($constructorArguments);
+    }
+
+    /**
+     * @throws ConfigDataException
+     */
+    private function customContainerBind()
+    {
+        require_once __DIR__ . "/../../../config/prebinding/CustomContainerBind.php";
+
+        if (isset($customBind) && is_array($customBind)) {
+            foreach ($customBind as $tag => $recipe) {
+                if ($this->container->has($tag)) {
+                    continue;
+                }
+
+                if (!is_callable($recipe)) {
+                    throw new ConfigDataException('Recipe for customContainer not callable.');
+                }
+
+                $object = $recipe();
+
+                if (!is_object($object)) {
+                    throw new ConfigDataException(strpos("Recipe for %s returned not object", $tag));
+                }
+
+                $this->container->add($tag, $object);
+            }
+        }
     }
 }

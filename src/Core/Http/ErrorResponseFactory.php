@@ -10,7 +10,7 @@ use Throwable;
 
 class ErrorResponseFactory implements FactoryInterface
 {
-    private static ErrorResponseFactory $factory;
+    private static ?ErrorResponseFactory $factory = null;
     private Throwable $exception;
 
     private function __construct(Throwable $exception)

@@ -13,6 +13,7 @@ use App\Core\Data\ConfigDataException;
 use App\Core\Http\ErrorResponseFactory;
 use App\Core\Route\Route;
 use App\Core\Route\RouteBuilder;
+use http\Exception;
 use Throwable;
 
 class CoreLoader
@@ -21,9 +22,9 @@ class CoreLoader
     {
         try {
             Core::setParameters(ConfigData::loadParameters());
-            Core::setServiceCreator(
+            /*Core::setServiceCreator(
                 ServiceCreatorBuilder::getInstance()->build()->getResult()
-            );
+            );*/
 
             Core::setSimpleContainer(
                 SimpleContainerBuilder::getInstance()->build()->getResult()
@@ -53,8 +54,8 @@ class CoreLoader
                 ],
                 'core'
             );
-
-           $this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать
+            echo $exception->getMessage();
+            /*$this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать*/
         }
     }
 

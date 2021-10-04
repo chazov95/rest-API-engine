@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Exception;
+namespace App\Core\Container;
 
 class BuilderException extends \Exception
 {
