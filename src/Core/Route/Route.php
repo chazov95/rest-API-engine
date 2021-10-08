@@ -32,11 +32,6 @@ class Route
     public array $uriValues;
 
     /**
-     * @var array
-     */
-    public array $methodArgumentsValues;
-
-    /**
      * Тип роута: api или html
      *
      * @var string

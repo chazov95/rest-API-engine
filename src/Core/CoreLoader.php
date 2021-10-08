@@ -54,7 +54,9 @@ class CoreLoader
                 ],
                 'core'
             );
-            echo $exception->getMessage();
+            echo $exception->getMessage()."</br>";
+            echo $exception->getFile()."</br>";
+            echo $exception->getLine()."</br>";
             /*$this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать*/
         }
     }
