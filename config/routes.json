@@ -1,14 +1,12 @@
 {
   "GET": {
     "/test": {
-      "controller": "App\\Controller\\TestController::salute",
-      "method": "GET"
-    }
-  },
+        "class":"App\\Controller\\TestController",
+        "method":"salute"
+    },
     "/test/{id}": {
-      "controller": "App\\Controller\\TestController::salute2",
-      "method": "GET"
+        "class":"App\\Controller\\TestController2",
+        "method":"salute2"
     }
   }
 }
-

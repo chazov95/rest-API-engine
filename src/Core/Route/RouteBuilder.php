@@ -12,7 +12,7 @@ class RouteBuilder implements BuilderInterface
 {
     private static ?RouteBuilder $builder = null;
     private Container $container;
-    private Route $route;
+    private ?Route $route;
 
     private function __construct()
     {
@@ -43,43 +43,57 @@ class RouteBuilder implements BuilderInterface
                 $request->getUri() ?? ''
             );
 
-        if (count($routeConfig) === 0) {
-            throw new RoutingException('Route not found');
-        };
-
         $this->route = new Route();
         $this->route->class = $routeConfig['class'];
         $this->route->classArguments = $this->getClassArguments($routeConfig['class']);
         $this->route->method = $routeConfig['method'];
         $this->route->methodArguments = $this->getmethodArguments($routeConfig);
         $this->route->type = 'restApi';
-        $this->route->uriValues = $this->getValuesFromUri($request->getUri(), $routeConfig['uri']);
+        $this->route->uriValues = $this->getValuesFromUri($routeConfig);
 
         return $this;
     }
 
     public function reset(): BuilderInterface
     {
-        // TODO: Implement reset() method.
+        $this->route = null;
+
+        return $this;
     }
 
     public function getResult(): Route
     {
+        $result = $this->route;
         $this->reset();
 
-        return $this->route;
+        return $result;
     }
 
-    private function findRouteByUrl(string $url, array $methodRoutes)
+    private function getClassArguments(mixed $class): array
     {
-        $urlArray = explode('/', $url);
+        return [];
+    }
 
-        foreach ($methodRoutes as $configUrl => $route) {
-            $configUrlArray = explode('/', $configUrl);
+    private function getmethodArguments(array $routeConfig):array
+    {
+        return [];
+    }
 
-            foreach ($configUrlArray as $key => $pathPart) {
+    /**
+     * @param array $routeConfig
+     *
+     * @return array
+     */
+    private function getValuesFromUri(array $routeConfig): array
+    {
+        $pathValues = [];
 
+        foreach ($routeConfig["uriTemplate"] as $key => $configPart) {
+            if (preg_match('/^[{]{1}.*[}]{1}$/', $configPart, $matches) === 1) {
+                $pathValues[substr($configPart, 1, -1)] =  $routeConfig['uri'][$key];
             }
         }
+
+        return $pathValues;
     }
 }

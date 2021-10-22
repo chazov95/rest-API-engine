@@ -7,7 +7,7 @@ use JsonException;
 
 class RouterConfigProvider
 {
-    private static RouterConfigProvider $manager;
+    private static ?RouterConfigProvider $manager = null;
 
     private array $routeConfig;
 
@@ -52,9 +52,54 @@ class RouterConfigProvider
     /**
      * @param string $method
      * @param string $url
+     *
+     * @return array
+     * @throws \App\Core\Route\RoutingException
      */
     public function findRoute(string $method, string $url): array
     {
+        $explodeUrl = explode('/', $url);
+        $lastElement = array_pop($explodeUrl);
 
+        if (!empty($lastElement) && count($explodeUrl) > 0) {
+            $explodeUrl[] = $lastElement;
+        }
+
+        if (!isset($this->routeConfig[$method])) {
+            throw new RoutingException('Route not found');
+        }
+
+        foreach ($this->routeConfig[$method] as $path => $routeConfig) {
+            $configPathArray = explode( '/', $path);
+
+            if (count($configPathArray) !== count($explodeUrl)) {
+                continue;
+            }
+
+            if ($this->comparePathes($explodeUrl, $configPathArray)) {
+                $this->routeConfig[$method][$path]['uri'] = $explodeUrl;
+                $this->routeConfig[$method][$path]['uriTemplate'] = $configPathArray;
+                return $this->routeConfig[$method][$path];
+            }
+        }
+
+        throw new RoutingException('Route not found');
+    }
+
+    /**
+     * @param array $requestUrl
+     * @param array $configUrl
+     *
+     * @return bool
+     */
+    private function comparePathes(array $requestUrl, array $configUrl): bool
+    {
+        foreach ($requestUrl as $index => $pathPart) {
+            if ($pathPart !== $configUrl[$index] && preg_match('/^[{]{1}.*[}]{1}$/', $configUrl[$index]) !== 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

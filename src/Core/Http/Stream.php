@@ -101,11 +101,7 @@ class Stream implements StreamInterface
 
             $this->message[] = $param;
         }
-        $r = $this->message;
-echo '<pre>';
-var_dump($r);
-echo '</pre>';
-die();
-        return $r;
+
+        return $this->message;
     }
 }

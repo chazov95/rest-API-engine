@@ -43,7 +43,7 @@ class CoreLoader
                 ->build()
                 ->getResult();
 
-            $route->execute();
+            $route->autowire()->execute();
         } catch (Throwable $exception) {
             DefaultLogger::getInstance()->log(
                 LogLevels::CRITICAL,
@@ -54,14 +54,12 @@ class CoreLoader
                 ],
                 'core'
             );
-            echo $exception->getMessage()."</br>";
-            echo $exception->getFile()."</br>";
-            echo $exception->getLine()."</br>";
-            /*$this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать*/
+
+            $this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать
         }
     }
 
-    private function sendResponse(Http\ErrorResponse $response)
+    private function sendResponse(Http\ErrorResponse $response): void
     {
         echo $response->serialize();
     }
