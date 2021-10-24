@@ -2,6 +2,7 @@
 
 namespace App\Core\Data;
 
+use App\Component\Logger\LogLevels;
 use App\Core\Route\RoutingException;
 use JsonException;
 
@@ -66,7 +67,7 @@ class RouterConfigProvider
         }
 
         if (!isset($this->routeConfig[$method])) {
-            throw new RoutingException('Route not found');
+            throw new RoutingException('Route not found', 404, 'NOT_FOUND', LogLevels::INFO);
         }
 
         foreach ($this->routeConfig[$method] as $path => $routeConfig) {
@@ -79,11 +80,12 @@ class RouterConfigProvider
             if ($this->comparePathes($explodeUrl, $configPathArray)) {
                 $this->routeConfig[$method][$path]['uri'] = $explodeUrl;
                 $this->routeConfig[$method][$path]['uriTemplate'] = $configPathArray;
+
                 return $this->routeConfig[$method][$path];
             }
         }
 
-        throw new RoutingException('Route not found');
+        throw new RoutingException('Route not found', 404, 'NOT_FOUND', LogLevels::INFO);
     }
 
     /**

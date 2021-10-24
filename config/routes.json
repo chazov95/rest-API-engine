@@ -1,12 +1,12 @@
 {
   "GET": {
-    "/test": {
-        "class":"App\\Controller\\TestController",
-        "method":"salute"
+    "/api/contract": {
+        "class":"App\\Controller\\ContractController",
+        "method":"viewContract"
     },
-    "/test/{id}": {
-        "class":"App\\Controller\\TestController2",
-        "method":"salute2"
+    "/api/contract/add": {
+        "class":"App\\Controller\\ContractController",
+        "method":"viewContract"
     }
   }
 }

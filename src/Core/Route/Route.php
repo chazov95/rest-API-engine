@@ -41,6 +41,11 @@ class Route
      */
     public string $type;
 
+    /**
+     * @throws \App\Core\Container\Autowire\AutowiringException
+     * @throws \App\Core\Container\ContainerException
+     * @throws \ReflectionException
+     */
     public function execute(): void
     {
         $object = AutowiringClassBuilder::getInstance()->setFqn($this->class)->build()->getResult();

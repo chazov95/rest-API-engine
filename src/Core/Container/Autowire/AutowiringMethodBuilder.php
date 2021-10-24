@@ -7,10 +7,10 @@ use App\Core\Interfaces\BuilderInterface;
 class AutowiringMethodBuilder implements BuilderInterface
 {
     /**
-     * @var \App\Core\Container\Autowire\AutowiringMethodBuilder
+     * @var \App\Core\Container\Autowire\AutowiringMethodBuilder|null
      */
-    private static AutowiringMethodBuilder $builder;
-    private ?array                         $arguments;
+    private static ?AutowiringMethodBuilder $builder = null;
+    private ?array                         $arguments = null;
     private string                         $Fqn;
     private string                         $method;
 
@@ -49,7 +49,7 @@ class AutowiringMethodBuilder implements BuilderInterface
      */
     public function getResult(): array
     {
-        $result = $this->arguments;
+        $result = $this->arguments ?? [];
         $this->reset();
 
         return $result;

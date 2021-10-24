@@ -10,7 +10,10 @@ use App\Core\Container\ServiceCreatorBuilder;
 use App\Core\Container\SimpleContainerBuilder;
 use App\Core\Data\ConfigData;
 use App\Core\Data\ConfigDataException;
+use App\Core\Exception\ExchangeException;
+use App\Core\Http\ErrorResponse;
 use App\Core\Http\ErrorResponseFactory;
+use App\Core\Http\Response;
 use App\Core\Route\Route;
 use App\Core\Route\RouteBuilder;
 use http\Exception;
@@ -45,22 +48,38 @@ class CoreLoader
 
             $route->execute();
         } catch (Throwable $exception) {
+            if ($exception instanceof ExchangeException) {
+                $level = $exception->getLogLevel();
+            } else {
+                $level = LogLevels::CRITICAL;
+            }
+
             DefaultLogger::getInstance()->log(
-                LogLevels::CRITICAL,
+                $level,
                 $exception->getMessage(),
                 [
                     'file' => $exception->getFile(),
-                    'line' => $exception->getLine()
+                    'line' => $exception->getLine(),
                 ],
                 'core'
             );
 
-            $this->sendResponse(ErrorResponseFactory::getInstance($exception)->create());  //TODO реализовать
+            $this->sendJsonResponse(ErrorResponseFactory::getInstance($exception)->create());
         }
     }
 
-    private function sendResponse(Http\ErrorResponse $response): void
+    /**
+     * @param \App\Core\Http\Response $response
+     */
+    private function sendJsonResponse(Response $response): void
     {
-        echo $response->serialize();
+        header('Content-Type: application/json');
+        http_response_code($response->getResponseCode());
+
+        foreach ($response->getHeaders() as $header) {
+            header($header);
+        }
+
+        echo $response->getBody();
     }
 }

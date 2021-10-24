@@ -8,10 +8,11 @@ use App\Core\Http\RequestInterface;
 
 class Request implements RequestInterface
 {
+
     /**
-     * @var \App\Core\Request
+     * @var \App\Core\Request|null
      */
-    private static Request $request;
+    private static ?Request $request = null;
 
     private function __construct()
     {

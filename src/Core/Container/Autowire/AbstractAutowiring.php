@@ -43,17 +43,13 @@ abstract class AbstractAutowiring
         $constructor = $reflection->getConstructor();
 
         if ($constructor === null) {
-            throw new AutowiringException(
-                sprintf('constructor for %s dose not accessible', $className)
-            );
+            return $this->addAndGetService($simpleContainer, $className);
         }
 
         $parameters = $constructor->getParameters();
 
         if (count($parameters) === 0) {
-            $simpleContainer->add($className, new $className());
-
-            return $simpleContainer->get($className);
+            return $this->addAndGetService($simpleContainer, $className);
         }
 
         $constructorArguments = [];
@@ -69,5 +65,18 @@ abstract class AbstractAutowiring
         }
 
         return $reflection->newInstanceArgs($constructorArguments);
+    }
+
+    /**
+     * @param        $simpleContainer
+     * @param string $className
+     *
+     * @return mixed
+     */
+    private function addAndGetService($simpleContainer, string $className): mixed
+    {
+        $simpleContainer->add($className, new $className());
+
+        return $simpleContainer->get($className);
     }
 }

@@ -6,13 +6,17 @@ use App\Core\Interfaces\FactoryInterface;
 use http\Env\Response;
 use http\Message;
 use http\Message\Body;
+use JsonException;
 use Throwable;
 
 class ErrorResponseFactory implements FactoryInterface
 {
     private static ?ErrorResponseFactory $factory = null;
-    private Throwable $exception;
+    private Throwable                    $exception;
 
+    /**
+     * @param \Throwable $exception
+     */
     private function __construct(Throwable $exception)
     {
         $this->exception = $exception;
@@ -34,17 +38,20 @@ class ErrorResponseFactory implements FactoryInterface
     public function create(): ErrorResponse
     {
         $response = new ErrorResponse();
-        $body = new Body();
 
-        $body->addForm(Serializer::toArray($this->exception));
-        $response->setHeaders()
-            ->setHttpVersion()
-            ->setResponseCode()
-            ->setResponseStatus()
+        try {
+            $body = json_encode([
+                'success' => false,
+                'message' => $this->exception->getMessage(),
+            ], JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            $body = sprintf('{"succes": false, "message": %s}', $exception->getMessage());
+        }
+
+
+        $response->setResponseCode($this->exception->getCode() ?? 400)
             ->setBody($body);
 
         return $response;
-
-        // TODO: Implement create() method.
     }
 }
