@@ -43,7 +43,7 @@ class CoreLoader
                 ->build()
                 ->getResult();
 
-            $route->autowire()->execute();
+            $route->execute();
         } catch (Throwable $exception) {
             DefaultLogger::getInstance()->log(
                 LogLevels::CRITICAL,

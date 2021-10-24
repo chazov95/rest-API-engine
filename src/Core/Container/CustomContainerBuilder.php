@@ -3,6 +3,7 @@
 namespace App\Core\Container;
 
 
+use App\Core\Container\Autowire\AbstractAutowiring;
 use App\Core\Core;
 use App\Core\Container\ContainerBuilderException;
 use App\Core\Data\ConfigDataException;
@@ -11,7 +12,7 @@ use ReflectionClass;
 use ReflectionParameter;
 
 
-class CustomContainerBuilder implements BuilderInterface
+class CustomContainerBuilder extends AbstractAutowiring implements BuilderInterface
 {
     public const TAG = "tag";
 
@@ -85,7 +86,7 @@ class CustomContainerBuilder implements BuilderInterface
     /**
      * @param string $tag
      *
-     * @return void
+     * @return object
      * @throws \App\Core\Container\ContainerBuilderException
      * @throws \ReflectionException
      */
@@ -109,7 +110,7 @@ class CustomContainerBuilder implements BuilderInterface
 
         if (count($parameters) === 0) {
             if (count($this->serviceConfig['classes'][$tag]['arguments']) > 0) {
-                throw new ContainerBuilderException(sprintf('config for %s is wrong', $className));
+                throw new ContainerBuilderException(sprintf('Config for %s is wrong', $className));
             }
 
             return new $this->serviceConfig['classes'][$tag]['class']();
@@ -141,74 +142,15 @@ class CustomContainerBuilder implements BuilderInterface
     }
 
     /**
-     * @param array $argument
-     *
-     * @return array|float|bool|int|string
-     * @throws \App\Core\Container\ContainerBuilderException
-     */
-    private function castToSimpleType(array $argument): array|float|bool|int|string
-    {
-        return match ($argument['type']) {
-            'string' => $argument['value'],
-            'bool', 'boolean' => (boolean)$argument['value'],
-            'float' => (float)$argument['value'],
-            'int', 'integer' => (int)$argument['value'],
-            'array' => explode(',', $argument['value']),
-            default => throw new ContainerBuilderException("Can't cast value"),
-        };
-    }
-
-    /**
-     * @throws \ReflectionException
-     * @throws ContainerBuilderException
-     */
-    private function createServiceByFqn(string $className)
-    {
-        $simpleContainer = Core::getSimpleContainew();
-
-        if ($simpleContainer->has($className)) {
-            return $simpleContainer->get($className);
-        };
-
-        $reflection = new ReflectionClass($className);
-        $constructor = $reflection->getConstructor();
-
-        if ($constructor === null) {
-            throw new ContainerBuilderException(
-                sprintf('constructor for %s dose not accessible', $className)
-            );
-        }
-
-        $parameters = $constructor->getParameters();
-
-        if (count($parameters) === 0) {
-            $simpleContainer->add($className, new $className());
-
-            return $simpleContainer->get($className);
-        }
-        $constructorArguments = [];
-
-        foreach ($parameters as $key => $parameter) {
-            $type = $parameter->getType();
-
-            if ($type->isBuiltin()) {
-                $constructorArguments[] = $parameter->getDefaultValue();
-            } else {
-                $this->createServiceByFqn($parameter->getType());
-            }
-        }
-
-        return $reflection->newInstanceArgs($constructorArguments);
-    }
-
-    /**
      * @throws ConfigDataException
      */
     private function customContainerBind()
     {
+        $customBind = [];
+
         require_once __DIR__ . "/../../../config/prebinding/CustomContainerBind.php";
 
-        if (isset($customBind) && is_array($customBind)) {
+        if (is_array($customBind)) {
             foreach ($customBind as $tag => $recipe) {
                 if ($this->container->has($tag)) {
                     continue;

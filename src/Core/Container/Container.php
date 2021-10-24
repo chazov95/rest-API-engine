@@ -10,9 +10,16 @@ class Container extends AbstractContainer implements ExtendedContainerInterface
     /** @var array */
     protected array $data = [];
 
-    public function get($id)
+    /**
+     * @throws \App\Core\Container\ContainerException
+     */
+    public function get($id): object
     {
-        // TODO: Implement get() method.
+        if (!isset($this->data[$id])) {
+            throw new ContainerException(sprintf('Service %s dont exist', $id));
+        }
+
+        return $this->data[$id];
     }
 
     /**

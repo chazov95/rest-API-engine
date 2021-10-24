@@ -15,8 +15,11 @@
         dockerfile: ./Dockerfile
       hostname: php-fpm
       volumes:
-        - "./:/var/www/html"
-        - './.docker/php/000-default.conf:/etc/apache2/sites-available/000-default.conf'
+        - ./:/var/www/html
+        - ./.docker/php/000-default.conf:/etc/apache2/sites-available/000-default.conf
+        - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
       working_dir: "/var/www/html"
+      environment:
+        PHP_IDE_CONFIG: "serverName=0.0.0.0"
       ports:
         - '8080:80'

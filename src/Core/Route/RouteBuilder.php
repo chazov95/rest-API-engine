@@ -35,7 +35,7 @@ class RouteBuilder implements BuilderInterface
      */
     public function build(): BuilderInterface
     {
-        $request = new Request();
+        $request = Request::getInstance();
 
         $routeConfig = RouterConfigProvider::getInstance()
             ->findRoute(

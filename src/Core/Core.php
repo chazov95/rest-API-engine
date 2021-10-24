@@ -50,7 +50,7 @@ class Core
     /**
      * @return Container
      */
-    public static function getSimpleContainew(): Container
+    public static function getSimpleContainer(): Container
     {
         return self::$simpleContainew;
     }
