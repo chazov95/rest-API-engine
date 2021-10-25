@@ -1,0 +1,9 @@
+{
+  "classes": [
+    "App\\Core\\Transformations\\Deserializer\\Deserializer"
+  ]
+}
+
+
+
+

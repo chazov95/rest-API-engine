@@ -2,9 +2,16 @@
 
 namespace App\Core\Container\Autowire;
 
+use App\Component\Logger\LogLevels;
+use App\Core\Abstractions\AbstractRequestDto;
+use App\Core\Core;
 use App\Core\Interfaces\BuilderInterface;
+use App\Core\Request;
+use App\Core\Transformations\Deserializer\Deserializer;
+use ReflectionClass;
+use ReflectionMethod;
 
-class AutowiringMethodBuilder implements BuilderInterface
+class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInterface
 {
     /**
      * @var \App\Core\Container\Autowire\AutowiringMethodBuilder|null
@@ -28,9 +35,37 @@ class AutowiringMethodBuilder implements BuilderInterface
 
     /**
      * @return \App\Core\Interfaces\BuilderInterface
+     * @throws \ReflectionException
      */
     public function build(): BuilderInterface
     {
+        $reflectionMethod = new ReflectionMethod($this->Fqn, $this->method);
+        $methodParameters = $reflectionMethod->getParameters();
+
+        $abstractRequestDtoCounter = 0;
+
+        foreach ($methodParameters as $parameter) {
+            $parameterType = $parameter->getType();
+
+            if ($parameterType=== null) {
+                //TODO выбросить exception?
+            }
+
+            $parameterClassReflection = new \ReflectionClass($parameterType->getName());
+            $parentClass = $parameterClassReflection->getParentClass();
+
+            if ($parentClass instanceof ReflectionClass && $parentClass->getName() === AbstractRequestDto::class) {
+                $abstractRequestDtoCounter++;
+
+                if ($abstractRequestDtoCounter > 1) {
+                    throw new AutowiringException('Controllers can accept only one request DTO');
+                }
+
+                $this->creacteRequestModel($parameterClassReflection);
+            }
+
+        }
+
        return $this;
     }
 
@@ -77,5 +112,27 @@ class AutowiringMethodBuilder implements BuilderInterface
         $this->method = $method;
 
         return $this;
+    }
+
+    /**
+     * @throws \App\Core\Container\ContainerException|\App\Core\Container\Autowire\AutowiringException
+     */
+    private function creacteRequestModel(ReflectionClass $dtoReflection): object
+    {
+        $simpleContainer = Core::getSimpleContainer();
+
+        if (!$simpleContainer->has(Deserializer::class)) {
+            throw new AutowiringException(
+                'Serializer not allowed',
+                500,
+                'CORE_EXCEPTION',
+                LogLevels::ERROR
+            );
+        }
+
+        /** @var Deserializer $deserializer */
+        $deserializer = $simpleContainer->get(Deserializer::class);
+
+        return $deserializer->convertToObject(Request::getInstance()->getRequestBody(), $dtoReflection->getName());
     }
 }

@@ -2,11 +2,19 @@
 
 namespace App\Core\Container;
 
+use App\Core\Container\Autowire\AbstractAutowiring;
+use App\Core\Core;
 use App\Core\Interfaces\BuilderInterface;
 
-class SimpleContainerBuilder implements BuilderInterface
+class SimpleContainerBuilder extends AbstractAutowiring implements BuilderInterface
 {
     private static ?SimpleContainerBuilder $builder = null;
+    private array                          $serviceConfig;
+
+    /**
+     * @var \App\Core\Container\Container|null
+     */
+    private ?Container $container = null;
 
     /**
      * @return SimpleContainerBuilder
@@ -20,20 +28,51 @@ class SimpleContainerBuilder implements BuilderInterface
         return self::$builder;
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \App\Core\Container\ContainerException
+     * @throws \App\Core\Container\Autowire\AutowiringException
+     */
     public function build(): BuilderInterface
     {
+        $this->container = new Container();
+
+        $this->customContainerBind();
+
+        foreach ($this->serviceConfig['classes'] as $fqn) {
+            $this->container->add($fqn, $this->createServiceByFqn($fqn, $this->container));
+        }
+
         return $this;
-        // TODO: Implement build() method.
     }
 
     public function reset(): BuilderInterface
     {
-        // TODO: Implement reset() method.
+        $this->serviceConfig = [];
+        $this->container = null;
+
+        return $this;
     }
 
     public function getResult(): Container
     {
-        return new Container();
-        // TODO: Implement getResult() method.
+        return $this->container;
+    }
+
+    /**
+     * @param array $loadFqnServicesConfigs
+     *
+     * @return $this
+     */
+    public function setServiceConfig(array $loadFqnServicesConfigs): static
+    {
+        $this->serviceConfig = $loadFqnServicesConfigs;
+
+        return $this;
+    }
+
+    private function customContainerBind()
+    {
+        //TODO implement this method
     }
 }

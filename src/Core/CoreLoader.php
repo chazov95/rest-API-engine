@@ -6,17 +6,13 @@ use App\Component\Logger\DefaultLogger;
 use App\Component\Logger\LogLevels;
 use App\Core\Container\Container;
 use App\Core\Container\CustomContainerBuilder;
-use App\Core\Container\ServiceCreatorBuilder;
 use App\Core\Container\SimpleContainerBuilder;
 use App\Core\Data\ConfigData;
-use App\Core\Data\ConfigDataException;
 use App\Core\Exception\ExchangeException;
-use App\Core\Http\ErrorResponse;
 use App\Core\Http\ErrorResponseFactory;
 use App\Core\Http\Response;
 use App\Core\Route\Route;
 use App\Core\Route\RouteBuilder;
-use http\Exception;
 use Throwable;
 
 class CoreLoader
@@ -30,13 +26,16 @@ class CoreLoader
             );*/
 
             Core::setSimpleContainer(
-                SimpleContainerBuilder::getInstance()->build()->getResult()
+                SimpleContainerBuilder::getInstance()
+                    ->setServiceConfig(ConfigData::loadFqnServicesConfigs())
+                    ->build()
+                    ->getResult()
             );
 
             /** @var Container $container */
             Core::setCustomContainer(
                 CustomContainerBuilder::getInstance()
-                    ->setServiceConfig(ConfigData::loadServicesConfigs())
+                    ->setServiceConfig(ConfigData::loadTagServicesConfigs())
                     ->build()
                     ->getResult()
             );

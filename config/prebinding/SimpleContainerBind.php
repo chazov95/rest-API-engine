@@ -1,13 +1,9 @@
 <?php
 
+use App\Core\Transformations\Deserializer\Deserializer;
+
 $simpleContainerPrebind = [
-    'FQN3' => function () {
-        return new StdClass();
-    },
-    'FQN2' => function () {
-        return new StdClass();
-    },
-    'FQN1' => function () {
-        return new StdClass();
+    Deserializer::class => static function () {
+        return new Deserializer();
     },
 ];

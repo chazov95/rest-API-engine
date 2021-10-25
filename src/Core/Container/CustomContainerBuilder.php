@@ -4,17 +4,13 @@ namespace App\Core\Container;
 
 
 use App\Core\Container\Autowire\AbstractAutowiring;
-use App\Core\Core;
-use App\Core\Container\ContainerBuilderException;
 use App\Core\Data\ConfigDataException;
 use App\Core\Interfaces\BuilderInterface;
 use ReflectionClass;
-use ReflectionParameter;
 
 
 class CustomContainerBuilder extends AbstractAutowiring implements BuilderInterface
 {
-    public const TAG = "tag";
 
     /** @var \App\Core\Interfaces\BuilderInterface|null */
     private static ?BuilderInterface $builder = null;
@@ -62,7 +58,9 @@ class CustomContainerBuilder extends AbstractAutowiring implements BuilderInterf
     public function build(): BuilderInterface
     {
         $this->container = new Container();
+
         $this->customContainerBind();
+
         foreach ($this->serviceConfig['classes'] as $tag => $class) {
             $this->container->add($tag, $this->createServiceByTag((string)$tag));
         }
@@ -89,6 +87,8 @@ class CustomContainerBuilder extends AbstractAutowiring implements BuilderInterf
      * @return object
      * @throws \App\Core\Container\ContainerBuilderException
      * @throws \ReflectionException
+     * @throws \App\Core\Container\Autowire\AutowiringException
+     * @throws \App\Core\Container\ContainerException
      */
     private function createServiceByTag(string $tag = ''): object
     {
@@ -144,7 +144,7 @@ class CustomContainerBuilder extends AbstractAutowiring implements BuilderInterf
     /**
      * @throws ConfigDataException
      */
-    private function customContainerBind()
+    private function customContainerBind(): void
     {
         $customBind = [];
 

@@ -14,7 +14,7 @@ class Core
     private static Container $customContainer;
 
     /** @var Container */
-    private static Container $simpleContainew;
+    private static Container $simpleContainer;
 
     /** @var Container */
     private static Container $serviceCreator;
@@ -52,15 +52,15 @@ class Core
      */
     public static function getSimpleContainer(): Container
     {
-        return self::$simpleContainew;
+        return self::$simpleContainer;
     }
 
     /**
-     * @param Container $simpleContainew
+     * @param Container $simpleContainer
      */
-    public static function setSimpleContainer(Container $simpleContainew): void
+    public static function setSimpleContainer(Container $simpleContainer): void
     {
-        self::$simpleContainew = $simpleContainew;
+        self::$simpleContainer = $simpleContainer;
     }
 
     /**

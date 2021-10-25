@@ -2,6 +2,7 @@
 
 namespace App\Core\Container\Autowire;
 
+use App\Core\Container\Container;
 use App\Core\Container\ContainerBuilderException;
 use App\Core\Core;
 use ReflectionClass;
@@ -27,13 +28,16 @@ abstract class AbstractAutowiring
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \App\Core\Container\Autowire\AutowiringException
+     * @param string                             $className
+     * @param \App\Core\Container\Container|null $container
+     *
+     * @return mixed|object
      * @throws \App\Core\Container\ContainerException
+     * @throws \ReflectionException
      */
-    protected function createServiceByFqn(string $className)
+    protected function createServiceByFqn(string $className, Container $container = null)
     {
-        $simpleContainer = Core::getSimpleContainer();
+        $simpleContainer = $container ?? Core::getSimpleContainer();
 
         if ($simpleContainer->has($className)) {
             return $simpleContainer->get($className);

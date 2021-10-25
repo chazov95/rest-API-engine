@@ -5,7 +5,7 @@ namespace App\Core;
 
 use App\Core\Http\RequestInterface;
 
-
+//TODO требует переработки и переосмысления
 class Request implements RequestInterface
 {
 
@@ -38,12 +38,17 @@ class Request implements RequestInterface
 
     public function getUri()
     {
-        return $_SERVER['REQUEST_URI'];
+        return $_SERVER['REDIRECT_URL'];
     }
 
     public function getQuery(string $paramName): string
     {
         //TODO need implement
         return 'not implemented';
+    }
+
+    public function getRequestBody(): array
+    {
+        return $_REQUEST;
     }
 }
