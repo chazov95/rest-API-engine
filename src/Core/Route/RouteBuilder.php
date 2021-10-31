@@ -37,6 +37,10 @@ class RouteBuilder implements BuilderInterface
     {
         $request = Request::getInstance();
 
+        if (in_array($request->getMethod(), ['GET', 'get'])) {
+            throw new RoutingException('GET method does not allowed in engine');
+        }
+
         $routeConfig = RouterConfigProvider::getInstance()
             ->findRoute(
                 $request->getMethod() ?? '',

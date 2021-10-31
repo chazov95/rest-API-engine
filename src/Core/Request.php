@@ -47,8 +47,11 @@ class Request implements RequestInterface
         return 'not implemented';
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function getRequestBody(): array
     {
-        return $_REQUEST;
+        return json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
     }
 }

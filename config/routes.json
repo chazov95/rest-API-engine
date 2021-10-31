@@ -1,5 +1,5 @@
 {
-  "GET": {
+  "POST": {
     "/api/contract": {
         "class":"App\\Controller\\ContractController",
         "method":"viewContract"
