@@ -45,7 +45,7 @@ class ErrorResponseFactory implements FactoryInterface
                 'message' => $this->exception->getMessage(),
             ], JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
-            $body = sprintf('{"succes": false, "message": %s}', $exception->getMessage());
+            $body = sprintf('{"success": false, "message": %s}', $exception->getMessage());
         }
 
 

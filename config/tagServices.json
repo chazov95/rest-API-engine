@@ -1,10 +1,4 @@
 {
-  "interfaces": {
-    "logger_interface": {
-      "interface": "App\\Core\\Interfaces\\Psr\\LoggerInterface",
-      "tag": "default_logger"
-    }
-  },
   "classes": {
     "repository_manager": {
       "class": "App\\Core\\Orm\\RepositoryManager",

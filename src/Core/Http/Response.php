@@ -30,14 +30,6 @@ class Response
     /**
      * @return string
      */
-    public function getHttpVersion(): string
-    {
-        return $this->httpVersion;
-    }
-
-    /**
-     * @return string
-     */
     public function getBody(): string
     {
         return $this->body;

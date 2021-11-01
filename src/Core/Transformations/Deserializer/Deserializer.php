@@ -10,7 +10,7 @@ class Deserializer
      * @param string $getName
      *
      * @return object
-     * @throws \ReflectionException
+     * @throws \ReflectionException|\App\Core\Transformations\Deserializer\DeserializerException
      */
     public function convertToObject(array $request, string $getName): object
     {
@@ -49,7 +49,7 @@ class Deserializer
                     }
                 }
             } else {
-                $propertyValue = $this->conversionToType($property->getType()?->getName(), $request[$propertyName]) ;
+                $propertyValue = $this->conversionToType($property->getType()?->getName() ?? '', $request[$propertyName]) ;
             }
 
             if (isset($request[$propertyName]) && !empty($propertyValue)) {
@@ -70,7 +70,7 @@ class Deserializer
             'bool', 'boolean' => (boolean) $value,
             'float', 'double' => (float) $value,
             'int', 'integer' => (int) $value,
-            default => throw new DeserializerException("Can't cast value"),
+            default => throw new DeserializerException(sprintf("Can't cast value %s", $value)),
         };
     }
 }

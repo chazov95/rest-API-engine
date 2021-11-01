@@ -48,3 +48,14 @@
 Движок запрещает использование метода GET, так как этот метод запрещает передачу тела запроса.
 Для получения данных сервера нужно использовать неиденпотентный метод POST.
 Иденпотентные методы получения данных обозначаются в конктракте меткой "Idenpotent"
+
+Пример ДТО 
+
+```
+class ContractMethodDto extends AbstractRequestDto
+{
+#[ObjectArrayType(Foo::class)]
+public array $test;
+public string $class;
+}
+```

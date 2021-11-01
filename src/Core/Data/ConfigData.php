@@ -63,4 +63,8 @@ class ConfigData
             throw new ConfigDataException($exception->getMessage());
         }
     }
+
+    public static function getServiceNameByInterfaceFqn(string $getName): string
+    {
+    }
 }

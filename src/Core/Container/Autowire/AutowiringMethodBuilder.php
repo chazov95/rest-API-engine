@@ -3,8 +3,10 @@
 namespace App\Core\Container\Autowire;
 
 use App\Component\Logger\LogLevels;
+use App\ConfigProvider;
 use App\Core\Abstractions\AbstractRequestDto;
 use App\Core\Core;
+use App\Core\Data\ConfigData;
 use App\Core\Interfaces\BuilderInterface;
 use App\Core\Request;
 use App\Core\Transformations\Deserializer\Deserializer;
@@ -16,10 +18,10 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
     /**
      * @var \App\Core\Container\Autowire\AutowiringMethodBuilder|null
      */
-    private static ?AutowiringMethodBuilder $builder = null;
-    private ?array                         $arguments = null;
-    private string                         $Fqn;
-    private string                         $method;
+    private static ?AutowiringMethodBuilder $builder   = null;
+    private ?array                          $arguments = null;
+    private string                          $Fqn;
+    private string                          $method;
 
     /**
      * @return \App\Core\Container\Autowire\AutowiringMethodBuilder
@@ -35,38 +37,65 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
 
     /**
      * @return \App\Core\Interfaces\BuilderInterface
+     * @throws \App\Core\Container\Autowire\AutowiringException
+     * @throws \App\Core\Container\ContainerException
+     * @throws \App\Core\Transformations\Deserializer\DeserializerException
+     * @throws \JsonException
      * @throws \ReflectionException
      */
     public function build(): BuilderInterface
     {
         $reflectionMethod = new ReflectionMethod($this->Fqn, $this->method);
         $methodParameters = $reflectionMethod->getParameters();
-
         $abstractRequestDtoCounter = 0;
 
         foreach ($methodParameters as $parameter) {
             $parameterType = $parameter->getType();
 
-            if ($parameterType=== null) {
-                //TODO выбросить exception?
+            if ($parameterType === null) {
+                throw new AutowiringException(sprintf('Cant get parameter type for %s', $this->method));
             }
 
-            $parameterClassReflection = new \ReflectionClass($parameterType->getName());
-            $parentClass = $parameterClassReflection->getParentClass();
+            /** здесь класс или интерфейс */
+            if ($parameterType->isBuiltin() === false) {
+                $parameterClassReflection = new \ReflectionClass($parameterType->getName());
+                $parentClass = $parameterClassReflection->getParentClass();
 
-            if ($parentClass instanceof ReflectionClass && $parentClass->getName() === AbstractRequestDto::class) {
-                $abstractRequestDtoCounter++;
+                if ($parameterClassReflection->isInterface()) {
+                    $this->arguments[] = $this->createServiceByFqn(
+                        ConfigData::getServiceNameByInterfaceFqn($parameterType->getName())
+                    );
 
-                if ($abstractRequestDtoCounter > 1) {
-                    throw new AutowiringException('Controllers can accept only one request DTO');
+                    continue;
                 }
 
-                $this->creacteRequestModel($parameterClassReflection);
+                if ($parentClass instanceof ReflectionClass && $parentClass->getName() === AbstractRequestDto::class) {
+                    $abstractRequestDtoCounter++;
+
+                    if ($abstractRequestDtoCounter > 1) {
+                        throw new AutowiringException('Controllers can accept only one request DTO');
+                    }
+
+                    $this->arguments[] = $this->creacteRequestModel($parameterClassReflection);
+                    continue;
+                }
+
+                $this->arguments[] = $this->createServiceByFqn($parameterType->getName());
             }
 
+            if ($parameterType->isBuiltin() === true) {
+                if ($parameter->isDefaultValueAvailable()) {
+                    $this->arguments[] = $parameter->getDefaultValue();
+                }
+                if ($parameterType->allowsNull()) {
+                    $this->arguments[] = null;
+                }
+
+                throw new AutowiringException('Cant cast argument for controller method');
+            }
         }
 
-       return $this;
+        return $this;
     }
 
     /**
@@ -115,7 +144,14 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
     }
 
     /**
-     * @throws \App\Core\Container\ContainerException|\App\Core\Container\Autowire\AutowiringException
+     * @param \ReflectionClass $dtoReflection
+     *
+     * @return object
+     * @throws \App\Core\Container\Autowire\AutowiringException
+     * @throws \App\Core\Container\ContainerException
+     * @throws \App\Core\Transformations\Deserializer\DeserializerException
+     * @throws \JsonException
+     * @throws \ReflectionException
      */
     private function creacteRequestModel(ReflectionClass $dtoReflection): object
     {
