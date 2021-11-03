@@ -61,6 +61,7 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
                 $parameterClassReflection = new \ReflectionClass($parameterType->getName());
                 $parentClass = $parameterClassReflection->getParentClass();
 
+                //если интерфейс
                 if ($parameterClassReflection->isInterface()) {
                     $this->arguments[] = $this->createServiceByFqn(
                         ConfigData::getServiceNameByInterfaceFqn($parameterType->getName())
@@ -69,6 +70,7 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
                     continue;
                 }
 
+                //если ДТО
                 if ($parentClass instanceof ReflectionClass && $parentClass->getName() === AbstractRequestDto::class) {
                     $abstractRequestDtoCounter++;
 
@@ -81,8 +83,10 @@ class AutowiringMethodBuilder extends AbstractAutowiring implements BuilderInter
                 }
 
                 $this->arguments[] = $this->createServiceByFqn($parameterType->getName());
+                continue;
             }
 
+            //если кастуемый тип
             if ($parameterType->isBuiltin() === true) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $this->arguments[] = $parameter->getDefaultValue();

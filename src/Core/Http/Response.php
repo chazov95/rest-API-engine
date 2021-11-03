@@ -16,6 +16,7 @@ class Response
     public function setBody(string $body): Response
     {
         $this->body = $body;
+
         return $this;
     }
 
@@ -43,8 +44,9 @@ class Response
     public function setResponseCode(int $responseCode): Response
     {
         $this->responseCode = $responseCode;
+
         return $this;
-}
+    }
 
     /**
      * @return int

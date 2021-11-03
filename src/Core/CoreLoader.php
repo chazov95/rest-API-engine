@@ -45,7 +45,7 @@ class CoreLoader
                 ->build()
                 ->getResult();
 
-            $route->execute();
+            $this->sendJsonResponse($route->execute());
         } catch (Throwable $exception) {
             if ($exception instanceof ExchangeException) {
                 $level = $exception->getLogLevel();

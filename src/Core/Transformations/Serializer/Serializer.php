@@ -8,7 +8,7 @@ class Serializer implements SerializerInterface
 {
     public function convertToJson(object $response)
     {
-        // TODO: Implement convertToJson() method.
+       return json_encode($response);
     }
 
     public function convertToArray(object $response)

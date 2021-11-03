@@ -3,7 +3,8 @@
     "App\\Core\\Interfaces\\SerializerInterface": "App\\Core\\Transformations\\Serializer\\Serializer"
   },
   "classes": [
-    "App\\Core\\Transformations\\Deserializer\\Deserializer"
+    "App\\Core\\Transformations\\Deserializer\\Deserializer",
+    "App\\Core\\Transformations\\Serializer\\Serializer"
   ]
 }
 

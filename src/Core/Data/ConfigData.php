@@ -64,7 +64,14 @@ class ConfigData
         }
     }
 
+    /**
+     * @param string $getName
+     *
+     * @return string
+     * @throws \App\Core\Data\ConfigDataException
+     */
     public static function getServiceNameByInterfaceFqn(string $getName): string
     {
+        return self::loadFqnServicesConfigs()['interfaces'][$getName] ?? '';
     }
 }
