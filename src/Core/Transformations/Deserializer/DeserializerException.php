@@ -2,8 +2,8 @@
 
 namespace App\Core\Transformations\Deserializer;
 
-use App\Core\Exception\ExchangeException;
+use App\Core\Exception\ExtendedException;
 
-class DeserializerException extends ExchangeException
+class DeserializerException extends ExtendedException
 {
 }

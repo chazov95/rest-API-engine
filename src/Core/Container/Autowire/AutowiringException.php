@@ -2,9 +2,9 @@
 
 namespace App\Core\Container\Autowire;
 
-use App\Core\Exception\ExchangeException;
+use App\Core\Exception\ExtendedException;
 
-class AutowiringException extends ExchangeException
+class AutowiringException extends ExtendedException
 {
 
 }

@@ -8,7 +8,7 @@ use App\Core\Container\Container;
 use App\Core\Container\CustomContainerBuilder;
 use App\Core\Container\SimpleContainerBuilder;
 use App\Core\Data\ConfigData;
-use App\Core\Exception\ExchangeException;
+use App\Core\Exception\ExtendedException;
 use App\Core\Http\ErrorResponseFactory;
 use App\Core\Http\Response;
 use App\Core\Route\Route;
@@ -47,7 +47,7 @@ class CoreLoader
 
             $this->sendJsonResponse($route->execute());
         } catch (Throwable $exception) {
-            if ($exception instanceof ExchangeException) {
+            if ($exception instanceof ExtendedException) {
                 $level = $exception->getLogLevel();
             } else {
                 $level = LogLevels::CRITICAL;

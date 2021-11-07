@@ -3,9 +3,10 @@
 namespace App\Component\Repository;
 
 use App\Constants;
+use App\Core\Interfaces\ModelInterface;
 use App\Core\Interfaces\RepositoryInterface;
 use App\Core\Orm\QueryBuilder;
-use ModelInterface;
+
 
 class AbstractRepository implements RepositoryInterface
 {

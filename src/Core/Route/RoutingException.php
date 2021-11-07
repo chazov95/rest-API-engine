@@ -2,8 +2,8 @@
 
 namespace App\Core\Route;
 
-use App\Core\Exception\ExchangeException;
+use App\Core\Exception\ExtendedException;
 
-class RoutingException extends ExchangeException
+class RoutingException extends ExtendedException
 {
 }

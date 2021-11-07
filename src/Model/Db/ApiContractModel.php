@@ -9,27 +9,10 @@ use App\Model\Db\ApiContractModel\Info;
 use App\Model\Db\ApiContractModel\Paths;
 use App\Model\Db\ApiContractModel\Tag;
 
-class ApiContractModel
-{
-    public string $swaggerVersion = '2.0';
 
-    public Info $info;
-
-    public string $basePath;
-
-    #[ModelProperty(PropertyType::objectArray, Tag::class)]
-    public array $tags;
-
-    #[ModelProperty(PropertyType::assocArray, Paths::class)]
-    public Paths $paths;
-
-    #[ModelProperty(PropertyType::assocArray, Definition::class)]
-    public Definition $definitions;
-}
-
-
-//swagger format
 /*
+ swagger format example
+
 {
     "swagger": "2.0",
   "info": {
@@ -557,3 +540,20 @@ class ApiContractModel
   }
 }
 */
+class ApiContractModel
+{
+    public string $swaggerVersion = '2.0';
+
+    public Info $info;
+
+    public string $basePath;
+
+    #[ModelProperty(PropertyType::objectArray, Tag::class)]
+    public array $tags;
+
+    #[ModelProperty(PropertyType::assocArray, Paths::class)]
+    public Paths $paths;
+
+    #[ModelProperty(PropertyType::assocArray, Definition::class)]
+    public Definition $definitions;
+}

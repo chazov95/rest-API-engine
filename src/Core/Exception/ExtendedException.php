@@ -5,7 +5,7 @@ namespace App\Core\Exception;
 use JetBrains\PhpStorm\Pure;
 use Throwable;
 
-class ExchangeException extends \Exception
+class ExtendedException extends \Exception
 {
     private string $responseCode;
     private string $logLevel;

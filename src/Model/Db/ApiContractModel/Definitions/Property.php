@@ -4,7 +4,6 @@ namespace App\Model\Db\ApiContractModel\Definitions;
 
 use App\Core\Transformations\ModelProperty;
 use App\Core\Transformations\PropertyType;
-use App\Model\Input\Response\AbstractInputResponse;
 
 class Property
 {

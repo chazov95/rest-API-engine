@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="MessDetector">
+    <phpmd_settings>
+      <MessDetectorConfiguration tool_path="$USER_HOME$/.config/composer/vendor/phpmd/phpmd/src/bin/phpmd" />
+    </phpmd_settings>
+  </component>
   <component name="PhpInterpreters">
     <interpreters>
       <interpreter id="199c43ef-bd7e-4db7-8037-bc1e07589d7e" name="php-fpm" home="docker-compose://DATA" debugger_id="php.debugger.XDebug">
@@ -70,4 +75,9 @@
     </phpInfoCache>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />
+  <component name="PhpStan">
+    <PhpStan_settings>
+      <PhpStanConfiguration tool_path="$USER_HOME$/.config/composer/vendor/phpstan/phpstan/phpstan" />
+    </PhpStan_settings>
+  </component>
 </project>
