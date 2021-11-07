@@ -2,6 +2,9 @@
 
 namespace App\Core\Transformations\Deserializer;
 
+use App\Core\Transformations\ModelProperty;
+use App\Core\Transformations\PropertyType;
+
 class Deserializer
 {
 
@@ -30,21 +33,25 @@ class Deserializer
                 $propertyAttributes = $property->getAttributes();
 
                 foreach ($propertyAttributes as $attribute) {
-                    if ($attribute->getName() === ObjectArrayType::class) {
+                    if ($attribute->getName() === ModelProperty::class) {
 
-                        /** @var \App\Core\Transformations\Deserializer\ObjectArrayType $typeObject */
-                        $typeObject = $attribute->newInstance();
+                        /** @var \App\Core\Transformations\ModelProperty $modelProperty */
+                        $modelProperty = $attribute->newInstance();
 
-                        $objectsArray = [];
+                        if ($modelProperty->type === PropertyType::objectArray) {
+                            $objectsArray = [];
 
-                        foreach ($request[$property->getName()] as $objectJson) {
-                            $objectsArray[] = $this->convertToObject(
-                                $objectJson, //TODO надо затестить такой подход
-                                $typeObject->fqn
-                            );
+                            foreach ($request[$property->getName()] as $objectJson) {
+                                $objectsArray[] = $this->convertToObject(
+                                    $objectJson, //TODO надо затестить такой подход
+                                    $modelProperty->fqn
+                                );
+                            }
+
+                            $propertyValue = $objectsArray;
+                            break;
                         }
 
-                        $propertyValue = $objectsArray;
                         break;
                     }
                 }
